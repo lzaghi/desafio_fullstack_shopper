@@ -8,6 +8,6 @@ const productsController = new ProductsController(productsService)
 
 const productsRouter = Router();
 
-productsRouter.get('/', async (req, res) => await productsController.getAllProducts(req, res) )
+productsRouter.post('/validate', async (req, res) => await productsController.validateProducts(req, res) )
 
 export default productsRouter;

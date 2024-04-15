@@ -5,6 +5,12 @@ export interface IProduct {
   sales_price: number;
 }
 
+export interface IInputProduct {
+  product_code: number;
+  new_price: number;
+}
+
 export interface IProductsService {
-  getAllProducts(): Promise<IProduct[]>;
+  getProducts(inputProducts: IInputProduct[]): Promise<IProduct[]>;
+  // updateProducts(inputProducts: IInputProduct[]): Promise<IProduct[]>;
 }
