@@ -34,7 +34,7 @@ PacksModel.init({
   timestamps: false,
 });
 
-PacksModel.belongsTo(ProductsModel, { foreignKey: 'pack_id', as: 'pack', targetKey: 'code' })
-PacksModel.belongsTo(ProductsModel, { foreignKey: 'product_id', as: 'product', targetKey: 'code' })
+ProductsModel.hasMany(PacksModel, { as: 'fromPack', sourceKey: 'code', foreignKey: 'product_id'});
+ProductsModel.hasMany(PacksModel, { as: 'hasProducts', sourceKey: 'code', foreignKey: 'pack_id'});
 
 export default PacksModel;

@@ -1,22 +1,35 @@
 import { Op } from "sequelize";
 import ProductsModel from "../database/models/ProductsModel";
 import { IInputProduct, IProductsService } from "../interfaces/IProducts";
+import PacksModel from "../database/models/PacksModel";
 
 export default class ProductsService implements IProductsService {
   constructor(
-    private readonly model: typeof ProductsModel
+    private readonly productsModel: typeof ProductsModel,
+    private readonly packsModel: typeof PacksModel
   ) {}
 
   async getProducts(inputProducts: IInputProduct[]): Promise<any> {
     const productCodes = inputProducts.map((product) => product.product_code);
-    const products = await this.model.findAll({
+    const products = await this.productsModel.findAll({
       where: {
         code: {
           [Op.in]: productCodes
         }
+      },
+      include: [{
+        model: this.packsModel,
+        as: 'fromPack',
+        attributes: { exclude: ['id', 'product_id'] }
+      },
+      {
+        model: this.packsModel,
+        as: 'hasProducts',
+        attributes: { exclude: ['id', 'pack_id'] }
       }
+    ]
     });
-
+    console.log(products)
     const hashProducts = products.reduce((acc, curr) => {
       acc[curr.code] = curr;
       return acc;
@@ -27,7 +40,7 @@ export default class ProductsService implements IProductsService {
 
   async validateProducts(inputProducts: IInputProduct[]) {
     const dbProducts = await this.getProducts(inputProducts) as any;
-
+    return dbProducts;
     const validatedProcuts = inputProducts.map((product) => {
       const dbProduct = dbProducts[product.product_code];
 

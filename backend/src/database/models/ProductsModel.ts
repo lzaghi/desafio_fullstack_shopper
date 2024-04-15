@@ -1,5 +1,6 @@
 import { DataTypes, Model } from 'sequelize';
 import db from '.';
+import PacksModel from './PacksModel';
 
 class ProductsModel extends Model {
   declare public code: number;
