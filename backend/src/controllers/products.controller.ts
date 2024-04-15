@@ -8,7 +8,7 @@ export default class ProductsController {
 
   async validateProducts(req: Request, res: Response): Promise<void> {
     const inputProducts = req.body;
-    const dbProducts = await this.productsService.getProducts(inputProducts);
+    const dbProducts = await this.productsService.validateProducts(inputProducts);
 
     res.status(200).json(dbProducts);
   }

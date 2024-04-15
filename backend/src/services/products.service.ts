@@ -16,6 +16,39 @@ export default class ProductsService implements IProductsService {
         }
       }
     });
-    return products;
+
+    const hashProducts = products.reduce((acc, curr) => {
+      acc[curr.code] = curr;
+      return acc;
+    }, {} as any)
+
+    return hashProducts;
+  }
+
+  async validateProducts(inputProducts: IInputProduct[]) {
+    const dbProducts = await this.getProducts(inputProducts) as any;
+
+    const validatedProcuts = inputProducts.map((product) => {
+      const dbProduct = dbProducts[product.product_code];
+
+      const validProduct = {
+        product_code: product.product_code,
+        name: dbProduct?.name,
+        current_price: dbProduct?.sales_price,
+        new_price: product.new_price,
+        error: null,
+      }
+
+      if(!dbProduct) {
+        let nonexistentProduct = {
+          ...validProduct,
+          error: 'Não existe produto com o código informado'
+        }
+        return nonexistentProduct;
+      }
+
+      return validProduct;
+    })
+    return validatedProcuts;
   }
 }
