@@ -30,16 +30,21 @@ export default class ProductsService implements IProductsService {
     ]
     });
 
-    const hashProducts = products.reduce((acc, curr) => {
+    const hashDbProducts = products.reduce((acc, curr) => {
       acc[curr.code] = curr;
       return acc;
     }, {} as any)
 
-    return hashProducts;
+    return hashDbProducts;
   }
 
   async validateProducts(inputProducts: IInputProduct[]) {
     const dbProducts = await this.getProducts(inputProducts) as any;
+
+    const hashInputProducts = inputProducts.reduce((acc, curr) => {
+      acc[curr.product_code] = curr;
+      return acc;
+    }, {} as any)
     
     const validatedProcuts = inputProducts.map((product) => {
       const dbProduct = dbProducts[product.product_code];
@@ -92,7 +97,7 @@ export default class ProductsService implements IProductsService {
         return invalidSalePriceProduct;
       }
 
-      if(!this.validReadjustment(product.new_price, +dbProduct.sales_price)) {
+      if(!this.validReadjustment(product.new_price, dbProduct)) {
         const invalidReadjustmentProduct = {
           ...validProduct,
           error: 'O reajuste não pode ser maior ou menor do que 10% do valor atual do produto'
@@ -100,9 +105,17 @@ export default class ProductsService implements IProductsService {
         return invalidReadjustmentProduct;
       }
 
+      if(!this.validPriceAssociation(product, dbProduct, dbProducts, hashInputProducts)) {
+        const invalidPriceAssociationProduct = {
+          ...validProduct,
+          error: 'O valor do reajuste de pacotes deve corresponder ao reajuste dos produtos associados'
+        }
+        return invalidPriceAssociationProduct;
+      }
+
       return validProduct;
     })
-    // return dbProducts;
+  
     return validatedProcuts;
   }
 
@@ -131,14 +144,32 @@ export default class ProductsService implements IProductsService {
     return newSalesPrice >= costPrice;
   }
 
-  validReadjustment(newSalesPrice: number, currentPrice: number) {
-    const increment = +(currentPrice * 1.1).toFixed(2);
-    const decrement = +(currentPrice * 0.9).toFixed(2);
-
-    return +newSalesPrice === increment || +newSalesPrice === decrement;
+  validReadjustment(newSalesPrice: number, dbProduct: any) {
+    if(!dbProduct.hasProducts.length) {
+      const currentPrice = +dbProduct.sales_price
+      const increment = +(currentPrice * 1.1).toFixed(2);
+      const decrement = +(currentPrice * 0.9).toFixed(2);
+  
+      return +newSalesPrice === increment || +newSalesPrice === decrement;
+    }
+    return true;
   }
 
-  validPriceAssociation() {
-    // TODO
+  validPriceAssociation(product: any, dbProduct: any, dbProducts: any, inputProducts: any) {
+    if (dbProduct.hasProducts.length) {
+      const packReadjustment = +product.new_price - +dbProduct.sales_price;
+      let productsReadjustment = 0;
+
+      for (const product of dbProduct.hasProducts) {
+        const packProduct = dbProducts[product.product_id];
+        const packInputProduct = inputProducts[product.product_id]
+        if (packProduct) {
+          productsReadjustment += (+packInputProduct.new_price - +packProduct.sales_price) * +product.qty;
+        }
+      }
+
+      return packReadjustment.toFixed(2) === productsReadjustment.toFixed(2);
+    }
+    return true;
   }
 }
