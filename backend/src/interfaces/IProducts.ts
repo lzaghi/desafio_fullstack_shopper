@@ -13,5 +13,5 @@ export interface IInputProduct {
 export interface IProductsService {
   getProducts(inputProducts: IInputProduct[]): any;
   validateProducts(inputProducts: IInputProduct[]): any;
-  // updateProducts(inputProducts: IInputProduct[]): any;
+  updateProducts(inputProducts: IInputProduct[]): any;
 }

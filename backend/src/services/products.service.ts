@@ -127,13 +127,13 @@ export default class ProductsService implements IProductsService {
   validPackAssociation(dbProduct: any, dbProducts: any) {
     if (dbProduct.fromPack.length) {
       const isAssociated = dbProduct.fromPack.some((pack: any) => dbProducts[pack.pack_id]);
-      if (!isAssociated) {
+      if(!isAssociated) {
         return false;
       }
     }
     if (dbProduct.hasProducts.length) {
       const isAssociated = dbProduct.hasProducts.some((product: any) => dbProducts[product.product_id]);
-      if (!isAssociated) {
+      if(!isAssociated) {
         return false;
       }
     }
@@ -156,14 +156,14 @@ export default class ProductsService implements IProductsService {
   }
 
   validPriceAssociation(product: any, dbProduct: any, dbProducts: any, inputProducts: any) {
-    if (dbProduct.hasProducts.length) {
+    if(dbProduct.hasProducts.length) {
       const packReadjustment = +product.new_price - +dbProduct.sales_price;
       let productsReadjustment = 0;
 
-      for (const product of dbProduct.hasProducts) {
+      for(const product of dbProduct.hasProducts) {
         const packProduct = dbProducts[product.product_id];
-        const packInputProduct = inputProducts[product.product_id]
-        if (packProduct) {
+        const packInputProduct = inputProducts[product.product_id];
+        if(packProduct) {
           productsReadjustment += (+packInputProduct.new_price - +packProduct.sales_price) * +product.qty;
         }
       }
@@ -171,5 +171,22 @@ export default class ProductsService implements IProductsService {
       return packReadjustment.toFixed(2) === productsReadjustment.toFixed(2);
     }
     return true;
+  }
+
+  async updateProducts(inputProducts: IInputProduct[]) {
+    const validatedProcuts = await this.validateProducts(inputProducts);
+
+    const validInput = validatedProcuts.every((product) => !product.error);
+    
+    if(validInput) {
+      await Promise.all(inputProducts.map(async (product) => {
+        await this.productsModel.update(
+          { sales_price: product.new_price },
+          { where: { code: product.product_code } }
+        )
+      }));
+    } else {
+      console.log('entrada inválida');
+    }
   }
 }

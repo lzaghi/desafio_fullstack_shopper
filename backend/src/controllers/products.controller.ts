@@ -12,4 +12,11 @@ export default class ProductsController {
 
     res.status(200).json(dbProducts);
   }
+
+  async updateProducts(req: Request, res: Response): Promise<void> {
+    const inputProducts = req.body;
+    const newProducts = await this.productsService.updateProducts(inputProducts);
+
+    res.status(200).json(newProducts);
+  }
 }
