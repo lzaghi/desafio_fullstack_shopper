@@ -29,7 +29,7 @@ export default class ProductsService implements IProductsService {
       }
     ]
     });
-    console.log(products)
+
     const hashProducts = products.reduce((acc, curr) => {
       acc[curr.code] = curr;
       return acc;
@@ -40,7 +40,7 @@ export default class ProductsService implements IProductsService {
 
   async validateProducts(inputProducts: IInputProduct[]) {
     const dbProducts = await this.getProducts(inputProducts) as any;
-    return dbProducts;
+    
     const validatedProcuts = inputProducts.map((product) => {
       const dbProduct = dbProducts[product.product_code];
 
@@ -60,12 +60,28 @@ export default class ProductsService implements IProductsService {
         return invalidInputProduct;
       }
 
+      if(!this.validPriceFormat(product.new_price)) {
+        const invalidPriceFormatProduct = {
+          ...validProduct,
+          error: 'O novo preço deve ser um número positivo com até duas casas decimais'
+        }
+        return invalidPriceFormatProduct;
+      }
+
       if(!dbProduct) {
         const nonexistentProduct = {
           ...validProduct,
           error: 'Não existe produto com o código informado'
         }
         return nonexistentProduct;
+      }
+
+      if(!this.validPackAssociation(dbProduct, dbProducts)) {
+        const invalidPackAssociationProduct = {
+          ...validProduct,
+          error: 'Produtos associados a esse também devem ser reajustados'
+        }
+        return invalidPackAssociationProduct;
       }
 
       if(!this.validSalePrice(product.new_price, dbProduct.cost_price)) {
@@ -86,7 +102,31 @@ export default class ProductsService implements IProductsService {
 
       return validProduct;
     })
+    // return dbProducts;
     return validatedProcuts;
+  }
+
+  validPriceFormat(price: number) {
+    const priceRegex = /^\d+(\.\d{1,2})?$/;
+    return priceRegex.test(price.toString());
+  }
+
+  validPackAssociation(dbProduct: any, dbProducts: any) {
+    if (dbProduct.fromPack.length) {
+      for (const pack of dbProduct.fromPack) {
+        if (!dbProducts[pack.pack_id]) {
+          return false;
+        }
+      }
+    }
+    if (dbProduct.hasProducts.length) {
+      for (const product of dbProduct.hasProducts) {
+        if (!dbProducts[product.product_id]) {
+          return false;
+        }
+      }
+    }
+    return true;
   }
 
   validSalePrice(newSalesPrice: number, costPrice: number) {
@@ -97,6 +137,10 @@ export default class ProductsService implements IProductsService {
     const increment = +(currentPrice * 1.1).toFixed(2);
     const decrement = +(currentPrice * 0.9).toFixed(2);
 
-    return newSalesPrice === increment || newSalesPrice === decrement;
+    return +newSalesPrice === increment || +newSalesPrice === decrement;
+  }
+
+  validPriceAssociation() {
+    // TODO
   }
 }
