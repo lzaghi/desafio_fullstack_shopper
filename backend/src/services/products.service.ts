@@ -113,17 +113,15 @@ export default class ProductsService implements IProductsService {
 
   validPackAssociation(dbProduct: any, dbProducts: any) {
     if (dbProduct.fromPack.length) {
-      for (const pack of dbProduct.fromPack) {
-        if (!dbProducts[pack.pack_id]) {
-          return false;
-        }
+      const isAssociated = dbProduct.fromPack.some((pack: any) => dbProducts[pack.pack_id]);
+      if (!isAssociated) {
+        return false;
       }
     }
     if (dbProduct.hasProducts.length) {
-      for (const product of dbProduct.hasProducts) {
-        if (!dbProducts[product.product_id]) {
-          return false;
-        }
+      const isAssociated = dbProduct.hasProducts.some((product: any) => dbProducts[product.product_id]);
+      if (!isAssociated) {
+        return false;
       }
     }
     return true;
