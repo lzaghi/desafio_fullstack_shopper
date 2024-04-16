@@ -1,7 +1,8 @@
 import { Op } from "sequelize";
 import ProductsModel from "../database/models/ProductsModel";
-import { IInputProduct, IProductsService } from "../interfaces/IProducts";
+import { IFromPack, IHasProduct, IHashInputProducts, IHashProducts, IInputProduct, IProduct, IProductsService, IValidatedProduct } from "../interfaces/IProducts";
 import PacksModel from "../database/models/PacksModel";
+import { BadRequestError } from "../helpers/errors";
 
 export default class ProductsService implements IProductsService {
   constructor(
@@ -9,7 +10,7 @@ export default class ProductsService implements IProductsService {
     private readonly packsModel: typeof PacksModel
   ) {}
 
-  async getProducts(inputProducts: IInputProduct[]): Promise<any> {
+  private async getProducts(inputProducts: IInputProduct[]): Promise<IHashProducts> {
     const productCodes = inputProducts.map((product) => product.product_code);
     const products = await this.productsModel.findAll({
       where: {
@@ -33,18 +34,18 @@ export default class ProductsService implements IProductsService {
     const hashDbProducts = products.reduce((acc, curr) => {
       acc[curr.code] = curr;
       return acc;
-    }, {} as any)
+    }, {} as IHashProducts)
 
     return hashDbProducts;
   }
 
-  async validateProducts(inputProducts: IInputProduct[]) {
-    const dbProducts = await this.getProducts(inputProducts) as any;
+  async validateProducts(inputProducts: IInputProduct[]): Promise<IValidatedProduct[]> {
+    const dbProducts = await this.getProducts(inputProducts) as IHashProducts;
 
     const hashInputProducts = inputProducts.reduce((acc, curr) => {
       acc[curr.product_code] = curr;
       return acc;
-    }, {} as any)
+    }, {} as IHashInputProducts)
     
     const validatedProcuts = inputProducts.map((product) => {
       const dbProduct = dbProducts[product.product_code];
@@ -116,6 +117,7 @@ export default class ProductsService implements IProductsService {
       return validProduct;
     })
   
+    // return dbProducts;
     return validatedProcuts;
   }
 
@@ -124,15 +126,15 @@ export default class ProductsService implements IProductsService {
     return priceRegex.test(price.toString());
   }
 
-  validPackAssociation(dbProduct: any, dbProducts: any) {
-    if (dbProduct.fromPack.length) {
-      const isAssociated = dbProduct.fromPack.some((pack: any) => dbProducts[pack.pack_id]);
+  validPackAssociation(dbProduct: IProduct, dbProducts: IHashProducts) {
+    if (dbProduct.fromPack!.length) {
+      const isAssociated = dbProduct.fromPack!.some((pack: IFromPack) => dbProducts[pack.pack_id]);
       if(!isAssociated) {
         return false;
       }
     }
-    if (dbProduct.hasProducts.length) {
-      const isAssociated = dbProduct.hasProducts.some((product: any) => dbProducts[product.product_id]);
+    if (dbProduct.hasProducts!.length) {
+      const isAssociated = dbProduct.hasProducts!.some((product: IHasProduct) => dbProducts[product.product_id]);
       if(!isAssociated) {
         return false;
       }
@@ -144,8 +146,8 @@ export default class ProductsService implements IProductsService {
     return newSalesPrice >= costPrice;
   }
 
-  validReadjustment(newSalesPrice: number, dbProduct: any) {
-    if(!dbProduct.hasProducts.length) {
+  validReadjustment(newSalesPrice: number, dbProduct: IProduct) {
+    if(!dbProduct.hasProducts!.length) {
       const currentPrice = +dbProduct.sales_price
       const increment = +(currentPrice * 1.1).toFixed(2);
       const decrement = +(currentPrice * 0.9).toFixed(2);
@@ -155,12 +157,12 @@ export default class ProductsService implements IProductsService {
     return true;
   }
 
-  validPriceAssociation(product: any, dbProduct: any, dbProducts: any, inputProducts: any) {
-    if(dbProduct.hasProducts.length) {
+  validPriceAssociation(product: IInputProduct, dbProduct: IProduct, dbProducts: IHashProducts, inputProducts: IHashInputProducts) {
+    if(dbProduct.hasProducts!.length) {
       const packReadjustment = +product.new_price - +dbProduct.sales_price;
       let productsReadjustment = 0;
 
-      for(const product of dbProduct.hasProducts) {
+      for(const product of dbProduct.hasProducts!) {
         const packProduct = dbProducts[product.product_id];
         const packInputProduct = inputProducts[product.product_id];
         if(packProduct) {
@@ -176,7 +178,7 @@ export default class ProductsService implements IProductsService {
   async updateProducts(inputProducts: IInputProduct[]) {
     const validatedProcuts = await this.validateProducts(inputProducts);
 
-    const validInput = validatedProcuts.every((product) => !product.error);
+    const validInput = validatedProcuts.every((product: IValidatedProduct) => !product.error);
     
     if(validInput) {
       await Promise.all(inputProducts.map(async (product) => {
@@ -186,7 +188,7 @@ export default class ProductsService implements IProductsService {
         )
       }));
     } else {
-      console.log('entrada inválida');
+      throw new BadRequestError('Invalid input');
     }
   }
 }

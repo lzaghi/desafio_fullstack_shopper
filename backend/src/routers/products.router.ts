@@ -9,7 +9,7 @@ const productsController = new ProductsController(productsService)
 
 const productsRouter = Router();
 
-productsRouter.post('/validate', async (req, res) => await productsController.validateProducts(req, res) )
-productsRouter.post('/update', async (req, res) => await productsController.updateProducts(req, res) )
+productsRouter.post('/validate', async (req, res, next) => await productsController.validateProducts(req, res, next) )
+productsRouter.post('/update', async (req, res, next) => await productsController.updateProducts(req, res, next) )
 
 export default productsRouter;

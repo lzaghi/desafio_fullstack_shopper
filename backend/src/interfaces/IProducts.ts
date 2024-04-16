@@ -1,8 +1,20 @@
+export interface IFromPack {
+  pack_id: number;
+  qty: number;
+}
+
+export interface IHasProduct {
+  product_id: number;
+  qty: number;
+}
+
 export interface IProduct {
   code: number;
   name: string;
   cost_price: number;
   sales_price: number;
+  fromPack?: IFromPack[];
+  hasProducts?: IHasProduct[];
 }
 
 export interface IInputProduct {
@@ -11,7 +23,22 @@ export interface IInputProduct {
 }
 
 export interface IProductsService {
-  getProducts(inputProducts: IInputProduct[]): any;
   validateProducts(inputProducts: IInputProduct[]): any;
   updateProducts(inputProducts: IInputProduct[]): any;
+}
+
+export interface IHashProducts {
+  [key: number]: IProduct;
+}
+
+export interface IHashInputProducts {
+  [key: number]: IInputProduct;
+}
+
+export interface IValidatedProduct {
+  product_code: number,
+  name?: string,
+  current_price?: number | string,
+  new_price: number | string,
+  error: null | string,
 }
