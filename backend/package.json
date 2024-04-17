@@ -2,9 +2,10 @@
   "name": "backend",
   "version": "1.0.0",
   "description": "",
-  "main": "index.js",
+  "main": "./build/server",
   "scripts": {
-    "dev": "ts-node-dev ./src/server.ts"
+    "dev": "ts-node-dev ./src/server.ts",
+    "start": "tsc && node ./build/server.js"
   },
   "keywords": [],
   "author": "",

@@ -23,8 +23,8 @@ export interface IInputProduct {
 }
 
 export interface IProductsService {
-  validateProducts(inputProducts: IInputProduct[]): any;
-  updateProducts(inputProducts: IInputProduct[]): any;
+  validateProducts(inputProducts: IInputProduct[]): Promise<IValidatedProduct[]>;
+  updateProducts(inputProducts: IInputProduct[]): Promise<void>;
 }
 
 export interface IHashProducts {

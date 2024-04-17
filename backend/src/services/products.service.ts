@@ -117,16 +117,15 @@ export default class ProductsService implements IProductsService {
       return validProduct;
     })
   
-    // return dbProducts;
     return validatedProcuts;
   }
 
-  validPriceFormat(price: number) {
+  private validPriceFormat(price: number): boolean {
     const priceRegex = /^\d+(\.\d{1,2})?$/;
     return priceRegex.test(price.toString());
   }
 
-  validPackAssociation(dbProduct: IProduct, dbProducts: IHashProducts) {
+  private validPackAssociation(dbProduct: IProduct, dbProducts: IHashProducts): boolean {
     if (dbProduct.fromPack!.length) {
       const isAssociated = dbProduct.fromPack!.some((pack: IFromPack) => dbProducts[pack.pack_id]);
       if(!isAssociated) {
@@ -142,11 +141,11 @@ export default class ProductsService implements IProductsService {
     return true;
   }
 
-  validSalePrice(newSalesPrice: number, costPrice: number) {
+  private validSalePrice(newSalesPrice: number, costPrice: number): boolean {
     return newSalesPrice >= costPrice;
   }
 
-  validReadjustment(newSalesPrice: number, dbProduct: IProduct) {
+  private validReadjustment(newSalesPrice: number, dbProduct: IProduct): boolean {
     if(!dbProduct.hasProducts!.length) {
       const currentPrice = +dbProduct.sales_price
       const increment = +(currentPrice * 1.1).toFixed(2);
@@ -157,7 +156,7 @@ export default class ProductsService implements IProductsService {
     return true;
   }
 
-  validPriceAssociation(product: IInputProduct, dbProduct: IProduct, dbProducts: IHashProducts, inputProducts: IHashInputProducts) {
+  private validPriceAssociation(product: IInputProduct, dbProduct: IProduct, dbProducts: IHashProducts, inputProducts: IHashInputProducts): boolean {
     if(dbProduct.hasProducts!.length) {
       const packReadjustment = +product.new_price - +dbProduct.sales_price;
       let productsReadjustment = 0;
@@ -175,7 +174,7 @@ export default class ProductsService implements IProductsService {
     return true;
   }
 
-  async updateProducts(inputProducts: IInputProduct[]) {
+  async updateProducts(inputProducts: IInputProduct[]): Promise<void> {
     const validatedProcuts = await this.validateProducts(inputProducts);
 
     const validInput = validatedProcuts.every((product: IValidatedProduct) => !product.error);
