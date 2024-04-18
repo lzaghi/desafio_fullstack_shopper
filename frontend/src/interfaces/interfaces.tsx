@@ -9,3 +9,11 @@ export interface InputCsvRef {
 export interface jsonData {
   [key: string]: string 
 }
+
+export interface validatedProduct {
+  product_code: number;
+  name: string;
+  current_price: number;
+  new_price: number;
+  error: string | null;
+}
