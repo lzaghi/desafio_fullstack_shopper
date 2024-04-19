@@ -31,10 +31,7 @@ export default class ProductsService implements IProductsService {
     ]
     });
 
-    const hashDbProducts = products.reduce((acc, curr) => {
-      acc[curr.code] = curr;
-      return acc;
-    }, {} as IHashProducts)
+    const hashDbProducts = this.hashFromArray(products, 'code');
 
     return hashDbProducts;
   }
@@ -42,10 +39,8 @@ export default class ProductsService implements IProductsService {
   async validateProducts(inputProducts: IInputProduct[]): Promise<IValidatedProduct[]> {
     const dbProducts = await this.getProducts(inputProducts) as IHashProducts;
 
-    const hashInputProducts = inputProducts.reduce((acc, curr) => {
-      acc[curr.product_code] = curr;
-      return acc;
-    }, {} as IHashInputProducts)
+    const hashInputProducts = this.hashFromArray(inputProducts, 'product_code');
+    const duplicates = this.checkForDuplicates(inputProducts);
     
     const validatedProcuts = inputProducts.map((product) => {
       const dbProduct = dbProducts[product.product_code];
@@ -56,6 +51,14 @@ export default class ProductsService implements IProductsService {
         current_price: dbProduct?.sales_price,
         new_price: product.new_price,
         error: null,
+      }
+
+      if(duplicates.includes(product.product_code)) {
+        const invalidDuplicatedProduct = {
+          ...validProduct,
+          error: 'Produto a ser reajustado está duplicado no arquivo de entrada'
+        }
+        return invalidDuplicatedProduct;
       }
 
       if(!product.product_code || !product.new_price) {
@@ -69,7 +72,7 @@ export default class ProductsService implements IProductsService {
       if(!this.validPriceFormat(product.new_price)) {
         const invalidPriceFormatProduct = {
           ...validProduct,
-          error: 'O novo preço deve ser um número positivo com até duas casas decimais'
+          error: "O novo preço deve ser um número positivo com até duas casas decimais, separadas por '.'"
         }
         return invalidPriceFormatProduct;
       }
@@ -90,7 +93,7 @@ export default class ProductsService implements IProductsService {
         return invalidPackAssociationProduct;
       }
 
-      if(!this.validSalePrice(product.new_price, dbProduct.cost_price)) {
+      if(!this.validSalePrice(+product.new_price, +dbProduct.cost_price)) {
         const invalidSalePriceProduct = {
           ...validProduct,
           error: 'O preço de venda não pode ser menor que o preço de custo'
@@ -98,7 +101,7 @@ export default class ProductsService implements IProductsService {
         return invalidSalePriceProduct;
       }
 
-      if(!this.validReadjustment(product.new_price, dbProduct)) {
+      if(!this.validReadjustment(+product.new_price, dbProduct)) {
         const invalidReadjustmentProduct = {
           ...validProduct,
           error: 'O reajuste não pode ser maior ou menor do que 10% do valor atual do produto'
@@ -121,8 +124,9 @@ export default class ProductsService implements IProductsService {
   }
 
   private validPriceFormat(price: number): boolean {
+    const newPrice = price.toString();
     const priceRegex = /^\d+(\.\d{1,2})?$/;
-    return priceRegex.test(price.toString());
+    return priceRegex.test(newPrice);
   }
 
   private validPackAssociation(dbProduct: IProduct, dbProducts: IHashProducts): boolean {
@@ -172,6 +176,25 @@ export default class ProductsService implements IProductsService {
       return packReadjustment.toFixed(2) === productsReadjustment.toFixed(2);
     }
     return true;
+  }
+
+  private hashFromArray(array: any[], key: string): { [key: string]: any } {
+    return array.reduce((acc, curr) => {
+      acc[curr[key]] = curr;
+      return acc;
+    }, {} as { [key: string]: any });
+  }
+
+  private checkForDuplicates(inputProducts: IInputProduct[]): number[] {
+    const seen = {} as { [key: string]: boolean };
+    const duplicates = [];
+    for(const product of inputProducts) {
+      if(seen[product.product_code]) {
+        duplicates.push(product.product_code);
+      }
+      seen[product.product_code] = true;
+    }
+    return duplicates;
   }
 
   async updateProducts(inputProducts: IInputProduct[]): Promise<void> {
