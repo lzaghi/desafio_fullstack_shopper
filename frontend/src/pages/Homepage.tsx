@@ -2,6 +2,7 @@ import { useRef, useState } from "react";
 import InputCsv from "../components/InputCsv";
 import { InputCsvRef, validatedProduct } from "../interfaces/interfaces";
 import { postRequest } from "../services/requests";
+import ProductCard from "../components/ProductCard";
 
 function Homepage() {
   const [csvFile, setCsvFile] = useState<File | undefined>(undefined);
@@ -26,14 +27,8 @@ function Homepage() {
 
       {
         !!products.length && (
-          products.map((product) => (
-            <div key={product.product_code}>
-              <p>{product.product_code}</p>
-              <p>{product.name}</p>
-              <p>{product.current_price}</p>
-              <p>{product.new_price}</p>
-              <p>{product.error}</p>
-            </div>
+          products.map((product, index) => (
+            <ProductCard product={ product } key={ index }/>
           ))
         )
       }

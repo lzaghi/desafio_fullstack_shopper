@@ -11,9 +11,9 @@ export interface jsonData {
 }
 
 export interface validatedProduct {
-  product_code: number;
-  name: string;
-  current_price: number;
-  new_price: number;
+  product_code: string;
+  name?: string;
+  current_price?: string;
+  new_price: string;
   error: string | null;
 }
