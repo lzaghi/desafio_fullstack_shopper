@@ -47,8 +47,10 @@ const InputCsv = forwardRef<InputCsvRef, InputCsvProps>(({ setParentFile }, ref)
 
   return (
     <>
-      <p>Upload do arquivo CSV:</p>
-      <input type="file" id="upload-input" accept=".csv, text/csv" onChange={handleFileChange}/>
+      <form id="upload-form">
+        <p>Upload do arquivo CSV:</p>
+        <input type="file" id="upload-input" accept=".csv, text/csv" onChange={handleFileChange}/>
+      </form>
     </>
   )
 })
