@@ -26,3 +26,9 @@
 .fileName .displayedInfo {
   font-style: italic;
 }
+
+@media screen and (min-width: 1024px) {
+  .inputContainer {
+    width: 350px;
+  }
+}

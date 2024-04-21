@@ -1,5 +1,8 @@
 .product {
   margin-bottom: 15px;
+}
+
+.info {
   border: 1px solid transparent;
   border-radius: 5px;
   background-image: linear-gradient(white, white),
@@ -7,12 +10,6 @@
   background-origin: border-box;
   background-clip: content-box, border-box;
   position: relative;
-
-  .icon {
-    width: 30px;
-    border-radius: 100%;
-    margin-right: 10px;
-  }
 
   .productCategory {
     padding: 10px 10px 0 10px;
@@ -41,26 +38,92 @@
     display: flex;
   }
 
+}
+.message {
+  padding: 10px;
+  border-radius: 5px;
+  margin-top: 10px;
+  font-weight: 500;
+  font-size: 15px;
+
+  .icon {
+      width: 30px;
+      border-radius: 100%;
+      margin-right: 10px;
+    }
+
+  .messageDiv {
+    display: flex;
+    align-items: center;
+  }
+
+  &.messageValid {
+    background: linear-gradient(to top, rgb(0, 198, 137, 0.2), transparent);
+  }
+  
+  &.messageInvalid {
+    background: linear-gradient(to top, rgb(251, 72, 68, 0.2), transparent);
+  }
+}
+
+@media screen and (min-width: 1024px) {
+  .product {
+    display: flex;
+    align-items: stretch;
+  }
+
+  .info {
+    background-image: linear-gradient(white, white),
+        linear-gradient(to right, lightgray, transparent);
+
+    width: 50%;
+    flex-grow: 1;
+
+    .prices{
+      padding-bottom: 10px;
+    }
+
+    .productCategory{
+      &.code {
+        float: none;
+      }
+
+      &.name {
+        margin-top: 0;
+      }
+    }
+  }
+
   .message {
-    padding: 10px;
-    border-radius: 5px;
-    margin-top: 10px;
-    font-weight: 500;
-    font-size: 15px;
-  
-    .messageDiv {
-      display: flex;
-      align-items: center;
-    }
-  
+    width: 50%;
+    margin-top: 0;
+    padding-top: 15px;
+
     &.messageValid {
-      background: linear-gradient(to left, rgb(0, 198, 137, 0.3), transparent);
+      background: linear-gradient(to left, rgb(0, 198, 137, 0.2), transparent);
     }
-    
+  
     &.messageInvalid {
       background: linear-gradient(to left, rgb(251, 72, 68, 0.2), transparent);
     }
+
+    .messageDiv {
+      flex-direction: row-reverse;
+      justify-content: end;
+      // align-items:flex-start;
+
+      .icon {
+        margin-left: 10px;
+        margin-right: 0;
+      }
+
+      span {
+        max-width: 300px;
+        text-align: right;
+      }
+    }
   }
+
 }
 
 

@@ -47,10 +47,14 @@ function Homepage() {
 
   return (
     <div className={ styles.container }>
-      <InputCsv setParentFile={setCsvFile} ref={inputRef}/>
+      <div className={ styles.header }>
+        <InputCsv setParentFile={setCsvFile} ref={inputRef}/>
 
-      <button disabled={!csvFile} onClick={validateFileProducts}>VALIDAR</button>
-      <button disabled={!products.length || products.some((p) => p.error)} onClick={updateProducts}>ATUALIZAR</button>
+        <div className={ styles.buttons }>
+          <button disabled={!csvFile} onClick={validateFileProducts}>VALIDAR</button>
+          <button disabled={!products.length || products.some((p) => p.error)} onClick={updateProducts}>ATUALIZAR</button>
+        </div>
+      </div>
       <SyncLoader loading={loading} size={10} color={'gray'}
         cssOverride={ { position: "absolute", top: '12px', right: '50%', transform: 'translateX(50%)' } }
       />

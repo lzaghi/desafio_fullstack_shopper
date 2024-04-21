@@ -1,5 +1,8 @@
 .product {
   margin-bottom: 15px;
+}
+
+.info {
   border: 1px solid transparent;
   border-radius: 5px;
   background-image: linear-gradient(white, white), linear-gradient(to bottom, lightgray, transparent);
@@ -7,46 +10,91 @@
   background-clip: content-box, border-box;
   position: relative;
 }
-.product .icon {
-  width: 30px;
-  border-radius: 100%;
-  margin-right: 10px;
-}
-.product .productCategory {
+.info .productCategory {
   padding: 10px 10px 0 10px;
 }
-.product .productCategory p {
+.info .productCategory p {
   margin: 0;
 }
-.product .productCategory .category {
+.info .productCategory .category {
   font-weight: 700;
   font-size: 14px;
   color: rgb(65, 65, 65);
 }
-.product .productCategory.code {
+.info .productCategory.code {
   float: right;
   padding-top: 7px;
 }
-.product .productCategory.name {
+.info .productCategory.name {
   margin-top: 10px;
 }
-.product .prices {
+.info .prices {
   display: flex;
 }
-.product .message {
+
+.message {
   padding: 10px;
   border-radius: 5px;
   margin-top: 10px;
   font-weight: 500;
   font-size: 15px;
 }
-.product .message .messageDiv {
+.message .icon {
+  width: 30px;
+  border-radius: 100%;
+  margin-right: 10px;
+}
+.message .messageDiv {
   display: flex;
   align-items: center;
 }
-.product .message.messageValid {
-  background: linear-gradient(to left, rgba(0, 198, 137, 0.3), transparent);
+.message.messageValid {
+  background: linear-gradient(to top, rgba(0, 198, 137, 0.2), transparent);
 }
-.product .message.messageInvalid {
-  background: linear-gradient(to left, rgba(251, 72, 68, 0.2), transparent);
+.message.messageInvalid {
+  background: linear-gradient(to top, rgba(251, 72, 68, 0.2), transparent);
+}
+
+@media screen and (min-width: 1024px) {
+  .product {
+    display: flex;
+    align-items: stretch;
+  }
+  .info {
+    background-image: linear-gradient(white, white), linear-gradient(to right, lightgray, transparent);
+    width: 50%;
+    flex-grow: 1;
+  }
+  .info .prices {
+    padding-bottom: 10px;
+  }
+  .info .productCategory.code {
+    float: none;
+  }
+  .info .productCategory.name {
+    margin-top: 0;
+  }
+  .message {
+    width: 50%;
+    margin-top: 0;
+    padding-top: 15px;
+  }
+  .message.messageValid {
+    background: linear-gradient(to left, rgba(0, 198, 137, 0.2), transparent);
+  }
+  .message.messageInvalid {
+    background: linear-gradient(to left, rgba(251, 72, 68, 0.2), transparent);
+  }
+  .message .messageDiv {
+    flex-direction: row-reverse;
+    justify-content: end;
+  }
+  .message .messageDiv .icon {
+    margin-left: 10px;
+    margin-right: 0;
+  }
+  .message .messageDiv span {
+    max-width: 300px;
+    text-align: right;
+  }
 }

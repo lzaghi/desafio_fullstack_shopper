@@ -48,7 +48,7 @@ const InputCsv = forwardRef<InputCsvRef, InputCsvProps>(({ setParentFile }, ref)
   }));
 
   return (
-    <>
+    <div className={ styles.inputContainer }>
       <label htmlFor="upload-input" className={ styles.customUploadInput }>
         <span className="material-icons-outlined">file_upload</span>
         <span className={ styles.inputText }>Carregar arquivo .csv</span>
@@ -63,7 +63,7 @@ const InputCsv = forwardRef<InputCsvRef, InputCsvProps>(({ setParentFile }, ref)
         )
         : <span className={ styles.displayedInfo }>Nenhum arquivo carregado</span>}
       </div>
-    </>
+    </div>
   )
 })
 
