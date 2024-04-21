@@ -1,5 +1,13 @@
 version: '3'
 services:
+  frontend:
+    build: ./frontend
+    container_name: frontend_shopper
+    ports:
+      - 4173:4173
+    depends_on:
+      - backend
+  
   backend:
     build: ./backend
     container_name: backend_shopper

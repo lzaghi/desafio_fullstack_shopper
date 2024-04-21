@@ -87,7 +87,7 @@ export default class ProductsService implements IProductsService {
         if(!this.validPackAssociation(dbProduct, dbProducts)) {
           const invalidPackAssociationProduct = {
             ...validProduct,
-            error: 'Produtos associados a esse também devem ser reajustados'
+            error: 'Produtos/pacotes associados a esse também devem ser reajustados'
           }
           invalidProducts.push(invalidPackAssociationProduct);
           return invalidPackAssociationProduct;
