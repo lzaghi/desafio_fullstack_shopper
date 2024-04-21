@@ -1,6 +1,8 @@
 import { forwardRef, useImperativeHandle, useState } from "react";
 import Papa from "papaparse";
 import { InputCsvProps, InputCsvRef, jsonData } from "../interfaces/interfaces";
+import 'material-icons/iconfont/material-icons.css';
+import styles from '../css/InputCsv.module.css'
 
 const InputCsv = forwardRef<InputCsvRef, InputCsvProps>(({ setParentFile }, ref) => {
   const [csvFile, setCsvFile] = useState<File | undefined>(undefined);
@@ -47,10 +49,20 @@ const InputCsv = forwardRef<InputCsvRef, InputCsvProps>(({ setParentFile }, ref)
 
   return (
     <>
-      <form id="upload-form">
-        <p>Upload do arquivo CSV:</p>
-        <input type="file" id="upload-input" accept=".csv, text/csv" onChange={handleFileChange}/>
-      </form>
+      <label htmlFor="upload-input" className={ styles.customUploadInput }>
+        <span className="material-icons-outlined">file_upload</span>
+        <span className={ styles.inputText }>Carregar arquivo .csv</span>
+      </label>
+      <input type="file" id="upload-input" accept=".csv, text/csv" style={{display: 'none'}} onChange={handleFileChange}/>
+      <div className={ styles.fileName }>{csvFile?.name
+        ? (
+          <div>
+            <span>Arquivo carregado: </span>
+            <span className={ styles.displayedInfo }>{csvFile.name}</span>
+          </div>
+        )
+        : <span className={ styles.displayedInfo }>Nenhum arquivo carregado</span>}
+      </div>
     </>
   )
 })

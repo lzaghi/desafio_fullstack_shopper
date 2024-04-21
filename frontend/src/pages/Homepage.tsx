@@ -6,6 +6,7 @@ import ProductCard from "../components/ProductCard";
 import { ToastContainer, toast } from "react-toastify";
 import 'react-toastify/dist/ReactToastify.css';
 import { SyncLoader } from "react-spinners";
+import styles from '../css/Homepage.module.css'
 
 function Homepage() {
   const [csvFile, setCsvFile] = useState<File | undefined>(undefined);
@@ -45,23 +46,29 @@ function Homepage() {
   }
 
   return (
-    <>
+    <div className={ styles.container }>
       <InputCsv setParentFile={setCsvFile} ref={inputRef}/>
 
       <button disabled={!csvFile} onClick={validateFileProducts}>VALIDAR</button>
       <button disabled={!products.length || products.some((p) => p.error)} onClick={updateProducts}>ATUALIZAR</button>
+      <SyncLoader loading={loading} size={10} color={'gray'}
+        cssOverride={ { position: "absolute", top: '12px', right: '50%', transform: 'translateX(50%)' } }
+      />
 
       {
         !!products.length && (
-          products.map((product, index) => (
-            <ProductCard product={ product } key={ index }/>
-          ))
+          <div className={ styles.productsContainer }>
+            {
+              products.map((product, index) => (
+                <ProductCard product={ product } key={ index }/>
+              ))
+            }
+          </div>
         )
       }
 
-      <SyncLoader loading={loading} size={10}/>
       <ToastContainer />
-    </>
+    </div>
   )
 }
 

@@ -1,0 +1,32 @@
+.customUploadInput{
+  cursor: pointer;
+  padding: 10px 20px;
+  background-color: var(--color-green-shopper);
+  color: white;
+  border-radius: 5px;
+  font-size: 17px;
+  font-weight: 700;
+  display: flex;
+  align-items: center;
+  transition: 0.3s;
+
+  .inputText {
+    margin-left: 10px;
+  }
+
+  &:hover {
+    filter: grayscale(0.5);
+  }
+}
+
+.fileName {
+  font-size: 15px;
+  margin-top: 10px;
+  word-break: break-word;
+  margin-bottom: 20px;
+
+  .displayedInfo {
+    font-style: italic;
+  }
+}
+
