@@ -1,5 +1,6 @@
 export interface InputCsvProps {
-  setParentFile: (file: File | undefined) => void;
+  csvFile: File | undefined;
+  setCsvFile: (file: File | undefined) => void;
 }
 
 export interface InputCsvRef {

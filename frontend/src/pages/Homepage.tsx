@@ -35,7 +35,8 @@ function Homepage() {
 
       const fileInput = document.getElementById('upload-input') as HTMLInputElement;
       fileInput.value = '';
-
+      setCsvFile(undefined);
+      
       setProducts([]);
       toast.success('Produtos atualizados com sucesso!')
     } catch (error: any) {
@@ -48,7 +49,7 @@ function Homepage() {
   return (
     <div className={ styles.container }>
       <div className={ styles.header }>
-        <InputCsv setParentFile={setCsvFile} ref={inputRef}/>
+        <InputCsv csvFile={csvFile} setCsvFile={setCsvFile} ref={inputRef}/>
 
         <div className={ styles.buttons }>
           <button disabled={!csvFile} onClick={validateFileProducts}>VALIDAR</button>

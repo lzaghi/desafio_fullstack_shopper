@@ -22,7 +22,7 @@ function ProductCard({ product }: { product: validatedProduct }) {
           </div>
           <div className={ styles.productCategory }>
             <p className={ styles.category }>Novo preço</p>
-            <p>{product.new_price.length ? 'R$ ' + parseFloat(product.new_price).toFixed(2) : '-'}</p>
+            <p>{product.new_price.length ? 'R$ ' + product.new_price : '-'}</p>
           </div>
         </div>
       </div>

@@ -1,16 +1,13 @@
-import { forwardRef, useImperativeHandle, useState } from "react";
+import { forwardRef, useImperativeHandle } from "react";
 import Papa from "papaparse";
 import { InputCsvProps, InputCsvRef, jsonData } from "../interfaces/interfaces";
 import 'material-icons/iconfont/material-icons.css';
 import styles from '../css/InputCsv.module.css'
 
-const InputCsv = forwardRef<InputCsvRef, InputCsvProps>(({ setParentFile }, ref) => {
-  const [csvFile, setCsvFile] = useState<File | undefined>(undefined);
-
+const InputCsv = forwardRef<InputCsvRef, InputCsvProps>(({ csvFile, setCsvFile }, ref) => {
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     setCsvFile(file);
-    setParentFile(file);
   }
 
   const readCsvFile = () => {

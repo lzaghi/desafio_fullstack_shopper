@@ -48,15 +48,6 @@ export default class ProductsService implements IProductsService {
           error: null,
         }
 
-        if(duplicates.includes(product.product_code)) {
-          const invalidDuplicatedProduct = {
-            ...validProduct,
-            error: 'Produto a ser reajustado está duplicado no arquivo de entrada'
-          }
-          invalidProducts.push(invalidDuplicatedProduct);
-          return invalidDuplicatedProduct;
-        }
-
         if(!product.product_code || !product.new_price) {
           const invalidInputProduct = {
             ...validProduct,
@@ -66,13 +57,13 @@ export default class ProductsService implements IProductsService {
           return invalidInputProduct;
         }
 
-        if(!this.validPriceFormat(product.new_price)) {
-          const invalidPriceFormatProduct = {
+        if(duplicates.includes(product.product_code)) {
+          const invalidDuplicatedProduct = {
             ...validProduct,
-            error: "O novo preço deve ser um número positivo com até duas casas decimais, separadas por '.'"
+            error: 'Produto a ser reajustado está duplicado no arquivo de entrada'
           }
-          invalidProducts.push(invalidPriceFormatProduct);
-          return invalidPriceFormatProduct;
+          invalidProducts.push(invalidDuplicatedProduct);
+          return invalidDuplicatedProduct;
         }
 
         if(!dbProduct) {
@@ -82,6 +73,15 @@ export default class ProductsService implements IProductsService {
           }
           invalidProducts.push(nonexistentProduct);
           return nonexistentProduct;
+        }
+
+        if(!this.validPriceFormat(product.new_price)) {
+          const invalidPriceFormatProduct = {
+            ...validProduct,
+            error: "O novo preço deve ser um número positivo com até duas casas decimais, separadas por ponto"
+          }
+          invalidProducts.push(invalidPriceFormatProduct);
+          return invalidPriceFormatProduct;
         }
 
         if(!this.validPackAssociation(dbProduct, dbProducts)) {
@@ -133,25 +133,6 @@ export default class ProductsService implements IProductsService {
     return validatedProcuts;
   }
 
-  private hashFromArray(array: any[], key: string): { [key: string]: any } {
-    return array.reduce((acc, curr) => {
-      acc[curr[key]] = curr;
-      return acc;
-    }, {} as { [key: string]: any });
-  }
-
-  private checkForDuplicates(inputProducts: IInputProduct[]): number[] {
-    const seen = {} as { [key: string]: boolean };
-    const duplicates = [];
-    for(const product of inputProducts) {
-      if(seen[product.product_code]) {
-        duplicates.push(product.product_code);
-      }
-      seen[product.product_code] = true;
-    }
-    return duplicates;
-  }
-
   private async getProducts(inputProducts: IInputProduct[]): Promise<IHashProducts> {
     const productCodes = inputProducts.map((product) => product.product_code);
     const products = await this.productsModel.findAll({
@@ -176,6 +157,25 @@ export default class ProductsService implements IProductsService {
     const hashDbProducts = this.hashFromArray(products, 'code');
 
     return hashDbProducts;
+  }
+
+  private hashFromArray(array: any[], key: string): { [key: string]: any } {
+    return array.reduce((acc, curr) => {
+      acc[curr[key]] = curr;
+      return acc;
+    }, {} as { [key: string]: any });
+  }
+
+  private checkForDuplicates(inputProducts: IInputProduct[]): number[] {
+    const seen = {} as { [key: string]: boolean };
+    const duplicates = [];
+    for(const product of inputProducts) {
+      if(seen[product.product_code]) {
+        duplicates.push(product.product_code);
+      }
+      seen[product.product_code] = true;
+    }
+    return duplicates;
   }
 
   private validPriceFormat(price: number): boolean {
